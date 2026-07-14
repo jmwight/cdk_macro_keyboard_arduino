@@ -18,6 +18,7 @@ void read_line(int lines);
 void read_ro();
 void tcm(int print_num);
 void fnl();
+uint8_t send_text(char *s);
 
 const int pin = D0;
 bool activeState = false;
@@ -115,7 +116,9 @@ void process_hid()
       if(KEY_1_PRESSED(keys_pressed))
         read_line();
       else if(KEY_2_PRESSED(keys_pressed))
-        
+        read_another_line();
+      else if(KEY_3_PRESSED(keys_pressed))
+        tcm(2);
 
       has_key = true;
     }
@@ -171,8 +174,21 @@ void read_line()
   }
 }
 
+void read_another_line()
+{
+  char i;
+  for(i = 0; i < 6; ++i)
+  {
+    send_key(HID_KEY_ENTER);  
+  }
+}
+
 void tcm(int print_num)
 {
+  if(print_num == 1)
+    send_text("pf\ny\n.\ncmp\ntcm\n\npp\n\n\n1\n");
+  else
+    send_text("pf\ny\n.\ncmp\ntcm\n\npp\n\n\n2\n");
   /*send_key(HID_KEY_P);
   send_key(HID_KEY_F);
   send_key(HID_KEY_ENTER);
@@ -182,4 +198,161 @@ void tcm(int print_num)
   send_key(HID_KEY_M);
   send_key(HID_KEY_P);
   send_key(HID_KEY_ENTER);*/
+}
+
+/* instead of having to do send_key(HID_KEY_*) a million times you can do send_text("cmp \n.\ntcm\n") and it converts */
+uint8_t send_text(char *s)
+{
+  do
+  {
+    switch(*s)
+    {
+      case 'A':
+      case 'a':
+        send_key(HID_KEY_A);
+        break;
+      case 'B':
+      case 'b':
+        send_key(HID_KEY_B);
+        break;
+      case 'C':
+      case 'c':
+        send_key(HID_KEY_C);
+        break;
+      case 'D':
+      case 'd':
+        send_key(HID_KEY_D);
+        break;
+      case 'E':
+      case 'e':
+        send_key(HID_KEY_E);
+        break;
+      case 'F':
+      case 'f':
+        send_key(HID_KEY_F);
+        break;
+      case 'G':
+      case 'g':
+        send_key(HID_KEY_G);
+        break;
+      case 'H':
+      case 'h':
+        send_key(HID_KEY_H);
+        break;
+      case 'I':
+      case 'i':
+        send_key(HID_KEY_I);
+        break;
+      case 'J':
+      case 'j':
+        send_key(HID_KEY_J);
+        break;
+      case 'K':
+      case 'k':
+        send_key(HID_KEY_K);
+        break;
+      case 'L':
+      case 'l':
+        send_key(HID_KEY_L);
+        break;
+      case 'M':
+      case 'm':
+        send_key(HID_KEY_M);
+        break;
+      case 'N':
+      case 'n':
+        send_key(HID_KEY_N);
+        break;
+      case 'O':
+      case 'o':
+        send_key(HID_KEY_O);
+        break;
+      case 'P':
+      case 'p':
+        send_key(HID_KEY_P);
+        break;
+      case 'Q':
+      case 'q':
+        send_key(HID_KEY_Q);
+        break;
+      case 'R':
+      case 'r':
+        send_key(HID_KEY_R);
+        break;
+      case 'S':
+      case 's':
+        send_key(HID_KEY_S);
+        break;
+      case 'T':
+      case 't':
+        send_key(HID_KEY_T);
+        break;
+      case 'U':
+      case 'u':
+        send_key(HID_KEY_U);
+        break;
+      case 'V':
+      case 'v':
+        send_key(HID_KEY_V);
+        break;
+      case 'W':
+      case 'w':
+        send_key(HID_KEY_W);
+        break;
+      case 'X':
+      case 'x':
+        send_key(HID_KEY_X);
+        break;
+      case 'Y':
+      case 'y':
+        send_key(HID_KEY_Y);
+        break;
+      case 'Z':
+      case 'z':
+        send_key(HID_KEY_Z);
+        break;
+      case '\n':
+        send_key(HID_KEY_ENTER);
+        break;
+      case '.':
+        send_key(HID_KEY_PERIOD);
+        break;
+      case ' ':
+        send_key(HID_KEY_SPACE);
+        break;
+      case '0':
+        send_key(HID_KEY_0);
+        break;
+      case '1':
+        send_key(HID_KEY_1);
+        break;
+      case '2':
+        send_key(HID_KEY_2);
+        break;
+      case '3':
+        send_key(HID_KEY_3);
+        break;
+      case '4':
+        send_key(HID_KEY_4);
+        break;
+      case '5':
+        send_key(HID_KEY_5);
+        break;
+      case '6':
+        send_key(HID_KEY_6);
+        break;
+      case '7':
+        send_key(HID_KEY_7);
+        break;
+      case '8':
+        send_key(HID_KEY_8);
+        break;
+      case '9':
+        send_key(HID_KEY_9);
+        break;
+      default:
+        return -1;
+    }
+  } while(*s++ != '\0');
+  return 0;
 }
