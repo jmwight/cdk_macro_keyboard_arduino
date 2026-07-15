@@ -122,22 +122,17 @@ void process_hid()
     // multiple keys pressed at the same time 
     if ((keys_pressed & (keys_pressed - 1)))
       return;
-    
-    /*if(!digitalRead(1))
-    {
-        //send_key(HID_KEY_ENTER);
-        read_line();
-    }*/
 
     if (keys_pressed)
     {
-      
       if(KEY_1_PRESSED(keys_pressed))
         read_line();
       else if(KEY_2_PRESSED(keys_pressed))
         read_another_line();
       else if(KEY_3_PRESSED(keys_pressed))
         tcm(2);
+      else if(KEY_4_PRESSED(keys_pressed))
+        fnl();
       else
         write_to_screen("Key not programmed");
         delay(100);
@@ -214,7 +209,7 @@ void write_to_screen(char *s)
 
 void read_line()
 {
-  write_to_screen("Read line");
+  write_to_screen("Read Line");
   char i;
   for(i = 0; i < 7; ++i)
   {
@@ -249,6 +244,23 @@ void tcm(int print_num)
   send_key(HID_KEY_M);
   send_key(HID_KEY_P);
   send_key(HID_KEY_ENTER);*/
+}
+
+
+void fnl()
+{
+  static uint8_t press_num = 0;
+  if(press_num++ == 0)
+  {
+    send_text("fnl ");
+    write_to_screen("fnl: \nPlease Enter line on terminal then hit this key again.");
+  }
+  else
+  {
+    send_text("\n999\n");
+    write_to_screen("Finish a Line");
+    press_num = 0;
+  }
 }
 
 /* instead of having to do send_key(HID_KEY_*) a million times you can do send_text("cmp \n.\ntcm\n") and it converts */
