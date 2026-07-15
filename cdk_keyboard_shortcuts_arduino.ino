@@ -3,9 +3,7 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
-
-
-Adafruit_SH1106G display = Adafruit_SH1106G(128, 64, &SPI1, OLED_DC, OLED_RST, OLED_CS);
+#include <Adafruit_NeoPixel.h>
 
 #define KEY_1_PRESSED(x) 1 & x
 #define KEY_2_PRESSED(x) 1 << 1 & x
@@ -19,6 +17,9 @@ Adafruit_SH1106G display = Adafruit_SH1106G(128, 64, &SPI1, OLED_DC, OLED_RST, O
 #define KEY_10_PRESSED(x) 1 << 9 & x
 #define KEY_11_PRESSED(x) 1 << 10 & x
 #define KEY_12_PRESSED(x) 1 << 11 & x
+// The MacroPad has 12 keys, and the NeoPixels are chained on Pin 19
+#define NUM_PIXELS 12
+#define PIN_NEOPIXEL 19
 
 void read_line(int lines);
 void read_ro();
@@ -40,13 +41,20 @@ uint8_t const desc_keyboard_report[] = {
 // USB HID objects
 Adafruit_USBD_HID usb_keyboard;
 
+// Display
+Adafruit_SH1106G display = Adafruit_SH1106G(128, 64, &SPI1, OLED_DC, OLED_RST, OLED_CS);
+
+// Keyboard lighting
+Adafruit_NeoPixel pixels(NUM_PIXELS, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
+
 // the setup function runs once when you press reset or power the board
 void setup() 
 {
+  /* Display setup */
   // Start the screen hardware (true overrides the default I2C reset)
   display.begin(0, true); 
   
-  // Clear the buffer (wipes out the default Adafruit splash screen)
+  // Clear the buffer
   display.clearDisplay();
   display.display();
   
@@ -54,7 +62,12 @@ void setup()
   display.setTextSize(1);               // Text size (1 is tiny, 2 is medium)
   display.setTextColor(SH110X_WHITE);   // Use SH110X_WHITE or SH110X_BLACK
   display.setTextWrap(true);           // Stop text from stretching weirdly
+
+  /* key light setup */
+  pixels.begin();
+  pixels.setBrightness(20); // 0 to 255
   
+  /* USB communication setup */
   // Manual begin() is required on core without built-in support e.g. mbed rp2040
   if (!TinyUSBDevice.isInitialized()) {
     TinyUSBDevice.begin(0);
@@ -66,7 +79,7 @@ void setup()
     pinMode(i, INPUT_PULLUP);
   }
 
-  Serial.begin(115200);
+//  Serial.begin(115200);
 
   // HID Keyboard
   usb_keyboard.setPollInterval(2);
@@ -126,16 +139,30 @@ void process_hid()
     if (keys_pressed)
     {
       if(KEY_1_PRESSED(keys_pressed))
+      {
+        key_light(0, true);
         read_line();
+      }
       else if(KEY_2_PRESSED(keys_pressed))
+      {
+        key_light(1, true);
         read_another_line();
+      }
       else if(KEY_3_PRESSED(keys_pressed))
+      {
+        key_light(2, true);
         tcm(2);
+      }
       else if(KEY_4_PRESSED(keys_pressed))
+      {
+        key_light(3, true);
         fnl();
+      }
       else
+      {
         write_to_screen("Key not programmed");
         delay(100);
+      }
 
       has_key = true;
     }
@@ -144,6 +171,7 @@ void process_hid()
       // send empty key report if previously has key pressed
       if (has_key)
         usb_keyboard.keyboardRelease(0);
+        key_lights_off();
       has_key = false;
     }
   }
@@ -180,6 +208,32 @@ void loop()
   }
 }
 
+/* turns on or off a specific key backcolor color (white) */
+void key_light(uint8_t key, uint8_t on)
+{
+  if(on)
+  {
+    pixels.setPixelColor(key, pixels.Color(255, 255, 255));
+    pixels.show();
+  }
+  else
+  {
+    pixels.setPixelColor(key, pixels.Color(0, 0, 0));
+    pixels.show();
+  }
+}
+
+/* turns off all key backlights */
+void key_lights_off()
+{
+  int i;
+  for(i = 0; i < 12; ++i)
+  {
+    pixels.setPixelColor(i, pixels.Color(0, 0, 0));
+  }
+  pixels.show();
+}
+
 void send_key(uint8_t k)
 {
   uint8_t keycode[6] = {0};
@@ -197,7 +251,7 @@ void write_to_screen(char *s)
 {
   display.clearDisplay();
   display.display();
-  display.setContrast(68);
+  display.setContrast(80);
   // Set the coordinate cursor (X, Y) where text starts
   display.setCursor(0, 10);             
   display.print(s);
