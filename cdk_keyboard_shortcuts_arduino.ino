@@ -1,5 +1,11 @@
 #include <Arduino.h>
 #include "Adafruit_TinyUSB.h"
+#include <SPI.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SH110X.h>
+
+
+Adafruit_SH1106G display = Adafruit_SH1106G(128, 64, &SPI1, OLED_DC, OLED_RST, OLED_CS);
 
 #define KEY_1_PRESSED(x) 1 & x
 #define KEY_2_PRESSED(x) 1 << 1 & x
@@ -19,9 +25,12 @@ void read_ro();
 void tcm(int print_num);
 void fnl();
 uint8_t send_text(char *s);
+void write_to_screen(char *s);
 
 const int pin = D0;
 bool activeState = false;
+
+static uint8_t  wait = 0; // wait already written to screen
 
 // HID report descriptor using TinyUSB's template
 uint8_t const desc_keyboard_report[] = {
@@ -34,6 +43,18 @@ Adafruit_USBD_HID usb_keyboard;
 // the setup function runs once when you press reset or power the board
 void setup() 
 {
+  // Start the screen hardware (true overrides the default I2C reset)
+  display.begin(0, true); 
+  
+  // Clear the buffer (wipes out the default Adafruit splash screen)
+  display.clearDisplay();
+  display.display();
+  
+  // Configure text properties
+  display.setTextSize(1);               // Text size (1 is tiny, 2 is medium)
+  display.setTextColor(SH110X_WHITE);   // Use SH110X_WHITE or SH110X_BLACK
+  display.setTextWrap(true);           // Stop text from stretching weirdly
+  
   // Manual begin() is required on core without built-in support e.g. mbed rp2040
   if (!TinyUSBDevice.isInitialized()) {
     TinyUSBDevice.begin(0);
@@ -68,8 +89,6 @@ void setup()
   digitalWrite(13, HIGH);
   delay(1000);
   digitalWrite(13, LOW);
-
-  Serial.println("Adafruit TinyUSB HID Composite example");
 }
 
 void light_on_one_second(void)
@@ -119,6 +138,9 @@ void process_hid()
         read_another_line();
       else if(KEY_3_PRESSED(keys_pressed))
         tcm(2);
+      else
+        write_to_screen("Key not programmed");
+        delay(100);
 
       has_key = true;
     }
@@ -150,6 +172,17 @@ void loop()
     ms = millis();
     process_hid();
   }
+
+  static uint32_t ms2 = 0;
+  if (millis() - ms2 > 12000) {
+    ms2 = millis();
+    display.clearDisplay();
+    display.display();
+    write_to_screen("Waiting...");
+    wait = true;
+    display.setContrast(0);
+    display.display();
+  }
 }
 
 void send_key(uint8_t k)
@@ -165,8 +198,23 @@ void send_key(uint8_t k)
   digitalWrite(13, LOW);
 }
 
+void write_to_screen(char *s)
+{
+  display.clearDisplay();
+  display.display();
+  display.setContrast(68);
+  // Set the coordinate cursor (X, Y) where text starts
+  display.setCursor(0, 10);             
+  display.print(s);
+
+  // Push the text from the microchip memory to the physical glass
+  display.display();
+  wait = false;
+}
+
 void read_line()
 {
+  write_to_screen("Read line");
   char i;
   for(i = 0; i < 7; ++i)
   {
@@ -176,6 +224,8 @@ void read_line()
 
 void read_another_line()
 {
+  
+  write_to_screen("Read Additional Line");
   char i;
   for(i = 0; i < 6; ++i)
   {
@@ -185,6 +235,7 @@ void read_another_line()
 
 void tcm(int print_num)
 {
+  write_to_screen("Print TCM");
   if(print_num == 1)
     send_text("pf\ny\n.\ncmp\ntcm\n\npp\n\n\n1\n");
   else
