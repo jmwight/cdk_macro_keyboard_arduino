@@ -28,6 +28,7 @@ void pp(int print_num);
 void pp_tcm(int print_num);
 void fc();
 void change_to_tyler();
+void open_ro();
 uint8_t send_text(char *s);
 void write_to_screen(char *s);
 
@@ -296,19 +297,45 @@ void read_another_line()
 /* print an RO that is something else */
 void pp(int print_num)
 {
-  
+  static uint8_t press_num = 0;
+  if(press_num++ == 0)
+  {
+    send_text("fc\ny\n\n");
+    sleep(1500);
+    send_text(".\n");
+    write_to_screen("pp:\nChange method of payment if needed. When done press button again");
+  }
+  else if(press_num++ == 1)
+  {
+    send_text("pp:\n");
+    write_to_screen("pp:\nEnter out mileage if not already correct. When done press button again");
+  }
+  else
+  {
+    press_num = 0;
+    send_text("\n\ny\n");
+    if(print_num == 1)
+      send_text("1");
+    else
+      send_text("2");
+    send_keys("\n");
+    write_to_screen("Print");
+  }
 }
 
 /* print an RO that is just TCM */
 void pp_tcm(int print_num)
 {
-  send_text("\nok\n");
-  sleep(3000);
-  write_to_screen("Print TCM");
+  send_text("fc\ny\n\n");
+  sleep(1500);
+  
+  send_text(".\ncmp\ntcm\n\npp\n\n\ny\n");
   if(print_num == 1)
-    send_text("fc\ny\n\n.\ncmp\ntcm\n\npp\n\n\ny\n1\n")
+    send_text("1")
   else
-    send_text("fc\ny\n\n.\ncmp\ntcm\n\npp\n\n\ny\n2\n")
+    send_text("2")
+  send_text("\n");
+  write_to_screen("Print TCM");
 }
 
 void fnl()
@@ -334,8 +361,7 @@ void fc()
   // first key press 
   if(press_num++ == 0)
   {
-    send_text("\nok\n");
-    sleep(3000); // sleep because cdk hangs key presses after hitting okay to get in and puts in okay box
+    open_preinvoiced_ro();
     send_text("fc\ny\n\n");
     sleep(1500); // sleep because stupid cdk hangs when keys entered loading fc
     send_text(".\ncmp\n");
@@ -362,14 +388,13 @@ void change_to_tyler()
   static uint8_t press_num = 0;
   if(press_num++ == 0)
   {
-    send_text("ok\n");
-    sleep(3000); // if not here it goes into the okay box. CDK lag 
+    open_preinvoiced_ro();
     send_key(HID_KEY_F3);
     sleep(500); // not sure if sleep(500) needed just there for precaution. 
     send_key(HID_KEY_F3);
     sleep(500);
     send_text("swr\n");
-    write_to_screen("change to tyler: enter RO number, hit button again");
+    write_to_screen("change to tyler: \nenter RO number, hit button again");
   }
   else
   {
@@ -381,6 +406,15 @@ void change_to_tyler()
     write_to_screen("Change to Tyler");
   }
   
+}
+
+/* open RO */
+void open_preinvoiced_ro()
+{
+    send_text("\n");
+    sleep(1200);
+    send_text("ok\n");
+    sleep(3000); // if not here it goes into the okay box. CDK lag 
 }
 
 /* instead of having to do send_key(HID_KEY_*) a million times you can do send_text("cmp \n.\ntcm\n") and it converts */
