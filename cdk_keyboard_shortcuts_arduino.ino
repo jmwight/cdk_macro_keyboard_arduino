@@ -301,7 +301,7 @@ void pp(int print_num)
   if(press_num++ == 0)
   {
     send_text("fc\ny\n\n");
-    sleep(1500);
+    delay(1500);
     send_text(".\n");
     write_to_screen("pp:\nChange method of payment if needed. When done press button again");
   }
@@ -318,7 +318,7 @@ void pp(int print_num)
       send_text("1");
     else
       send_text("2");
-    send_keys("\n");
+    send_text("\n");
     write_to_screen("Print");
   }
 }
@@ -327,13 +327,13 @@ void pp(int print_num)
 void pp_tcm(int print_num)
 {
   send_text("fc\ny\n\n");
-  sleep(1500);
+  delay(1500);
   
   send_text(".\ncmp\ntcm\n\npp\n\n\ny\n");
   if(print_num == 1)
-    send_text("1")
+    send_text("1");
   else
-    send_text("2")
+    send_text("2");
   send_text("\n");
   write_to_screen("Print TCM");
 }
@@ -363,7 +363,7 @@ void fc()
   {
     open_preinvoiced_ro();
     send_text("fc\ny\n\n");
-    sleep(1500); // sleep because stupid cdk hangs when keys entered loading fc
+    delay(1500); // sleep because stupid cdk hangs when keys entered loading fc
     send_text(".\ncmp\n");
     write_to_screen("fc: Change method of payment to correct, then hit button again");
   }
@@ -390,9 +390,9 @@ void change_to_tyler()
   {
     open_preinvoiced_ro();
     send_key(HID_KEY_F3);
-    sleep(500); // not sure if sleep(500) needed just there for precaution. 
+    delay(500); // not sure if delay(500) needed just there for precaution. 
     send_key(HID_KEY_F3);
-    sleep(500);
+    delay(500);
     send_text("swr\n");
     write_to_screen("change to tyler: \nenter RO number, hit button again");
   }
@@ -401,7 +401,7 @@ void change_to_tyler()
     press_num = 0;
     send_text("\n\n11725\n");
     send_key(HID_KEY_F3);
-    sleep(500);
+    delay(500);
     send_text("pfc\n1553087\n\n");
     write_to_screen("Change to Tyler");
   }
@@ -412,9 +412,9 @@ void change_to_tyler()
 void open_preinvoiced_ro()
 {
     send_text("\n");
-    sleep(1200);
+    delay(1200);
     send_text("ok\n");
-    sleep(3000); // if not here it goes into the okay box. CDK lag 
+    delay(3000); // if not here it goes into the okay box. CDK lag 
 }
 
 /* instead of having to do send_key(HID_KEY_*) a million times you can do send_text("cmp \n.\ntcm\n") and it converts */
