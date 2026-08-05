@@ -163,11 +163,16 @@ void process_hid()
       else if(KEY_5_PRESSED(keys_pressed))
       {
         key_light(4, true);
-        fc();
+        pp(2);
       }
       else if(KEY_6_PRESSED(keys_pressed))
       {
         key_light(5, true);
+        fc();
+      }
+      else if(KEY_7_PRESSED(keys_pressed))
+      {
+        key_light(6, true);
         change_to_tyler();
       }
       else
