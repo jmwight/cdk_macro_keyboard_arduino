@@ -23,8 +23,10 @@
 
 void read_line(int lines);
 void read_ro();
-void tcm(int print_num);
+void pp_tcm(int print_num);
 void fnl();
+void fc();
+void change_to_tyler();
 uint8_t send_text(char *s);
 void write_to_screen(char *s);
 
@@ -78,8 +80,6 @@ void setup()
   {
     pinMode(i, INPUT_PULLUP);
   }
-
-//  Serial.begin(115200);
 
   // HID Keyboard
   usb_keyboard.setPollInterval(2);
@@ -151,12 +151,22 @@ void process_hid()
       else if(KEY_3_PRESSED(keys_pressed))
       {
         key_light(2, true);
-        tcm(2);
+        fnl();
       }
       else if(KEY_4_PRESSED(keys_pressed))
       {
         key_light(3, true);
-        fnl();
+        pp_tcm(2);
+      }
+      else if(KEY_5_PRESSED(keys_pressed))
+      {
+        key_light(4, true);
+        fc();
+      }
+      else if(KEY_6_PRESSED(keys_pressed))
+      {
+        key_light(5, true);
+        change_to_tyler();
       }
       else
       {
@@ -282,39 +292,84 @@ void read_another_line()
   }
 }
 
-void tcm(int print_num)
+void pp_tcm(int print_num)
 {
+  send_text("\nok\n");
+  sleep(3000);
   write_to_screen("Print TCM");
   if(print_num == 1)
-    send_text("pf\ny\n.\ncmp\ntcm\n\npp\n\n\n1\n");
+    send_text("fc\ny\n\n.\ncmp\ntcm\n\npp\n\n\ny\n1\n")
   else
-    send_text("pf\ny\n.\ncmp\ntcm\n\npp\n\n\n2\n");
-  /*send_key(HID_KEY_P);
-  send_key(HID_KEY_F);
-  send_key(HID_KEY_ENTER);
-  send_key(HID_KEY_PERIOD);
-  send_key(HID_KEY_ENTER);
-  send_key(HID_KEY_C);
-  send_key(HID_KEY_M);
-  send_key(HID_KEY_P);
-  send_key(HID_KEY_ENTER);*/
+    send_text("fc\ny\n\n.\ncmp\ntcm\n\npp\n\n\ny\n2\n")
 }
-
 
 void fnl()
 {
   static uint8_t press_num = 0;
   if(press_num++ == 0)
   {
-    send_text("fnl ");
     write_to_screen("fnl: \nPlease Enter line on terminal then hit this key again.");
+    send_text("fnl ");
   }
   else
   {
+    press_num = 0;
     send_text("\n999\n");
     write_to_screen("Finish a Line");
-    press_num = 0;
   }
+}
+
+/* final close an RO */
+void fc()
+{
+  static uint8_t press_num = 0;
+  // first key press 
+  if(press_num++ == 0)
+  {
+    send_text("\nok\n");
+    sleep(3000); // sleep because cdk hangs key presses after hitting okay to get in
+    send_text("fc\ny\n\n");
+    sleep(3000); // sleep because stupid cdk hangs when keys entered loading fc
+    send_text(".\ncmp\n");
+    write_to_screen("fc: Change method of payment to correct, then hit button again");
+  }
+  // second key press
+  else if(press_num++ == 1)
+  {
+    send_text("fc\n");
+    write_to_screen("Enter mileage out, then hit button again");
+  }
+  // third key press
+  else
+  {
+    press_num = 0;
+    send_text("\n\ny\n20\n");
+    write_to_screen("Final Close");
+  }
+}
+
+/* gets out goes to swr, then enter RO number, hit button again it changes to tyler then brings you back to pfc */
+void change_to_tyler()
+{
+  static uint8_t press_num = 0;
+  if(press_num++ == 0)
+  {
+    send_text("ok\n");
+    sleep(3000);
+    send_key(HID_KEY_F3);
+    send_key(HID_KEY_F3);
+    send_text("swr\n");
+    write_to_screen("change to tyler: enter RO number, hit button again");
+  }
+  else
+  {
+    press_num = 0;
+    send_text("\n\n11725\n");
+    send_key(HID_KEY_F3);
+    send_text("pfc\n1553087\n\n");
+    write_to_screen("Change to Tyler");
+  }
+  
 }
 
 /* instead of having to do send_key(HID_KEY_*) a million times you can do send_text("cmp \n.\ntcm\n") and it converts */
