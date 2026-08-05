@@ -23,8 +23,9 @@
 
 void read_line(int lines);
 void read_ro();
-void pp_tcm(int print_num);
 void fnl();
+void pp(int print_num);
+void pp_tcm(int print_num);
 void fc();
 void change_to_tyler();
 uint8_t send_text(char *s);
@@ -292,6 +293,13 @@ void read_another_line()
   }
 }
 
+/* print an RO that is something else */
+void pp(int print_num)
+{
+  
+}
+
+/* print an RO that is just TCM */
 void pp_tcm(int print_num)
 {
   send_text("\nok\n");
@@ -327,9 +335,9 @@ void fc()
   if(press_num++ == 0)
   {
     send_text("\nok\n");
-    sleep(3000); // sleep because cdk hangs key presses after hitting okay to get in
+    sleep(3000); // sleep because cdk hangs key presses after hitting okay to get in and puts in okay box
     send_text("fc\ny\n\n");
-    sleep(3000); // sleep because stupid cdk hangs when keys entered loading fc
+    sleep(1500); // sleep because stupid cdk hangs when keys entered loading fc
     send_text(".\ncmp\n");
     write_to_screen("fc: Change method of payment to correct, then hit button again");
   }
@@ -355,9 +363,11 @@ void change_to_tyler()
   if(press_num++ == 0)
   {
     send_text("ok\n");
-    sleep(3000);
+    sleep(3000); // if not here it goes into the okay box. CDK lag 
     send_key(HID_KEY_F3);
+    sleep(500); // not sure if sleep(500) needed just there for precaution. 
     send_key(HID_KEY_F3);
+    sleep(500);
     send_text("swr\n");
     write_to_screen("change to tyler: enter RO number, hit button again");
   }
@@ -366,6 +376,7 @@ void change_to_tyler()
     press_num = 0;
     send_text("\n\n11725\n");
     send_key(HID_KEY_F3);
+    sleep(500);
     send_text("pfc\n1553087\n\n");
     write_to_screen("Change to Tyler");
   }
