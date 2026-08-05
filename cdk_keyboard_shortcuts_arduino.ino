@@ -326,16 +326,27 @@ void pp(int print_num)
 /* print an RO that is just TCM */
 void pp_tcm(int print_num)
 {
-  send_text("fc\ny\n\n");
-  delay(1500);
+  static uint8_t press_num = 0;
+  if(press_num++ == 0)
+  {
+    send_text("fc\ny\n\n");
+    delay(1500);
   
-  send_text(".\ncmp\ntcm\n\npp\n\n\ny\n");
-  if(print_num == 1)
-    send_text("1");
+    send_text(".\ncmp\ntcm\n\npp\n");
+    write_to_screen("pp_tcm:\n Please enter out mileage if not already correct then hit key again");
+  }
+
   else
-    send_text("2");
-  send_text("\n");
-  write_to_screen("Print TCM");
+  {
+    press_num = 0;
+    send_text("\n\ny\n");
+    if(print_num == 1)
+      send_text("1");
+    else
+      send_text("2");
+    send_text("\n");
+    write_to_screen("Print TCM");
+  }
 }
 
 void fnl()
