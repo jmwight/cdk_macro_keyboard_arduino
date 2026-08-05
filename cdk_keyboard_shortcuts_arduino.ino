@@ -20,6 +20,7 @@
 // The MacroPad has 12 keys, and the NeoPixels are chained on Pin 19
 #define NUM_PIXELS 12
 #define PIN_NEOPIXEL 19
+#define SCREEN_TIMEOUT  14000
 
 void read_line(int lines);
 void read_ro();
@@ -214,7 +215,7 @@ void loop()
   }
 
   static uint32_t ms2 = 0;
-  if (millis() - ms2 > 14000) {
+  if (millis() - ms2 > SCREEN_TIMEOUT) {
     ms2 = millis();
     display.clearDisplay();
     display.display();
@@ -303,15 +304,17 @@ void read_another_line()
 void pp(int print_num)
 {
   static uint8_t press_num = 0;
-  if(press_num++ == 0)
+  if(press_num == 0)
   {
+    ++press_num;
     send_text("fc\ny\n\n");
     delay(1500);
     send_text(".\n");
     write_to_screen("pp:\nChange method of payment if needed. When done press button again");
   }
-  else if(press_num++ == 1)
+  else if(press_num == 1)
   {
+    ++press_num;
     send_text("pp:\n");
     write_to_screen("pp:\nEnter out mileage if not already correct. When done press button again");
   }
@@ -332,15 +335,15 @@ void pp(int print_num)
 void pp_tcm(int print_num)
 {
   static uint8_t press_num = 0;
-  if(press_num++ == 0)
+  if(press_num == 0)
   {
+    ++press_num;
     send_text("fc\ny\n\n");
     delay(1500);
   
     send_text(".\ncmp\ntcm\n\npp\n");
     write_to_screen("pp_tcm:\n Please enter out mileage if not already correct then hit key again");
   }
-
   else
   {
     press_num = 0;
@@ -357,8 +360,9 @@ void pp_tcm(int print_num)
 void fnl()
 {
   static uint8_t press_num = 0;
-  if(press_num++ == 0)
+  if(press_num == 0)
   {
+    ++press_num;
     write_to_screen("fnl: \nPlease Enter line on terminal then hit this key again.");
     send_text("fnl ");
   }
@@ -375,22 +379,24 @@ void fc()
 {
   static uint8_t press_num = 0;
   // first key press 
-  if(press_num++ == 0)
+  if(press_num == 0)
   {
+    ++press_num;
     open_preinvoiced_ro();
     send_text("fc\ny\n\n");
-    delay(1500); // sleep because stupid cdk hangs when keys entered loading fc
+    delay(1200); // sleep because stupid cdk hangs when keys entered loading fc
     send_text(".\ncmp\n");
     write_to_screen("fc: Change method of payment to correct, then hit button again");
   }
   // second key press
-  else if(press_num++ == 1)
+  else if(press_num == 1)
   {
+    ++press_num;
     send_text("fc\n");
     write_to_screen("Enter mileage out, then hit button again");
   }
   // third key press
-  else
+  else if(press_num == 2)
   {
     press_num = 0;
     send_text("\n\ny\n20\n");
@@ -402,13 +408,14 @@ void fc()
 void change_to_tyler()
 {
   static uint8_t press_num = 0;
-  if(press_num++ == 0)
+  if(press_num == 0)
   {
+    ++press_num;
     open_preinvoiced_ro();
     send_key(HID_KEY_F3);
-    delay(500); // not sure if delay(500) needed just there for precaution. 
+    delay(300); // not sure if delay(500) needed just there for precaution. 
     send_key(HID_KEY_F3);
-    delay(500);
+    delay(300);
     send_text("swr\n");
     write_to_screen("change to tyler: \nenter RO number, hit button again");
   }
@@ -417,7 +424,7 @@ void change_to_tyler()
     press_num = 0;
     send_text("\n\n11725\n");
     send_key(HID_KEY_F3);
-    delay(500);
+    delay(300);
     send_text("pfc\n1553087\n\n");
     write_to_screen("Change to Tyler");
   }
@@ -428,9 +435,9 @@ void change_to_tyler()
 void open_preinvoiced_ro()
 {
     send_text("\n");
-    delay(1200);
+    delay(1000);
     send_text("ok\n");
-    delay(3000); // if not here it goes into the okay box. CDK lag 
+    delay(1000); // if not here it goes into the okay box. CDK lag 
 }
 
 /* instead of having to do send_key(HID_KEY_*) a million times you can do send_text("cmp \n.\ntcm\n") and it converts */
