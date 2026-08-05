@@ -209,7 +209,7 @@ void loop()
   }
 
   static uint32_t ms2 = 0;
-  if (millis() - ms2 > 12000) {
+  if (millis() - ms2 > 14000) {
     ms2 = millis();
     display.clearDisplay();
     display.display();
