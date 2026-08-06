@@ -21,6 +21,9 @@
 #define NUM_PIXELS 12
 #define PIN_NEOPIXEL 19
 #define SCREEN_TIMEOUT  14000
+#define SHORT_DELAY 500
+#define MEDIUM_DELAY  1000
+#define LONG_DELAY  1500
 
 void read_line(int lines);
 void read_ro();
@@ -103,14 +106,14 @@ void setup()
 
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
-  delay(1000);
+  delay(MEDIUM_DELAY);
   digitalWrite(13, LOW);
 }
 
 void light_on_one_second(void)
 {
   digitalWrite(13, HIGH);
-  delay(1000);
+  delay(MEDIUM_DELAY);
   digitalWrite(13, LOW);
 }
 
@@ -300,6 +303,12 @@ void read_another_line()
   }
 }
 
+Wight, John
+  
+9:41 AM (11 hours ago)
+  
+  
+to me
 /* print an RO that is something else */
 void pp(int print_num)
 {
@@ -308,14 +317,45 @@ void pp(int print_num)
   {
     ++press_num;
     send_text("fc\ny\n\n");
-    delay(1500);
+    delay(LONG_DELAY);
     send_text(".\n");
     write_to_screen("pp:\nChange method of payment if needed. When done press button again");
   }
   else if(press_num == 1)
   {
     ++press_num;
-    send_text("pp:\n");
+    send_text("pp\n");
+    write_to_screen("pp:\nEnter out mileage if not already correct. When done press button again");
+  }
+  else
+  {
+    press_num = 0;
+    send_text("\n\ny\n");
+    if(print_num == 1)
+      send_text("1");
+    else
+      send_text("2");
+    send_text("\n");
+    write_to_screen("Print");
+  }
+}
+
+/* print an RO that is something else */
+void pp(int print_num)
+{
+  static uint8_t press_num = 0;
+  if(press_num == 0)
+  {
+    ++press_num;
+    send_text("fc\ny\n\n");
+    delay(LONG_DELAY);
+    send_text(".\n");
+    write_to_screen("pp:\nChange method of payment if needed. When done press button again");
+  }
+  else if(press_num == 1)
+  {
+    ++press_num;
+    send_text("pp\n");
     write_to_screen("pp:\nEnter out mileage if not already correct. When done press button again");
   }
   else
@@ -339,8 +379,8 @@ void pp_tcm(int print_num)
   {
     ++press_num;
     send_text("fc\ny\n\n");
-    delay(1500);
-  
+    delay(LONG_DELAY);
+ 
     send_text(".\ncmp\ntcm\n\npp\n");
     write_to_screen("pp_tcm:\n Please enter out mileage if not already correct then hit key again");
   }
@@ -352,6 +392,7 @@ void pp_tcm(int print_num)
       send_text("1");
     else
       send_text("2");
+    delay(MEDIUM_DELAY);
     send_text("\n");
     write_to_screen("Print TCM");
   }
@@ -384,7 +425,7 @@ void fc()
     ++press_num;
     open_preinvoiced_ro();
     send_text("fc\ny\n\n");
-    delay(1200); // sleep because stupid cdk hangs when keys entered loading fc
+    delay(MEDIUM_DELAY); // sleep because stupid cdk hangs when keys entered loading fc
     send_text(".\ncmp\n");
     write_to_screen("fc: Change method of payment to correct, then hit button again");
   }
@@ -404,7 +445,7 @@ void fc()
   }
 }
 
-/* gets out goes to swr, then enter RO number, hit button again it changes to tyler then brings you back to pfc */
+ /* gets out goes to swr, then enter RO number, hit button again it changes to tyler then brings you back to pfc */
 void change_to_tyler()
 {
   static uint8_t press_num = 0;
@@ -413,31 +454,33 @@ void change_to_tyler()
     ++press_num;
     open_preinvoiced_ro();
     send_key(HID_KEY_F3);
-    delay(300); // not sure if delay(500) needed just there for precaution. 
+    delay(SHORT_DELAY); // not sure if delay(500) needed just there for precaution.
     send_key(HID_KEY_F3);
-    delay(300);
+    delay(SHORT_DELAY);
     send_text("swr\n");
     write_to_screen("change to tyler: \nenter RO number, hit button again");
   }
   else
   {
     press_num = 0;
-    send_text("\n\n11725\n");
+    send_text("\n");
+    delay(MEDIUM_DELAY);
+    send_text("\n11725\n");
     send_key(HID_KEY_F3);
-    delay(300);
+    delay(SHORT_DELAY);
     send_text("pfc\n1553087\n\n");
     write_to_screen("Change to Tyler");
   }
-  
+ 
 }
 
 /* open RO */
 void open_preinvoiced_ro()
 {
     send_text("\n");
-    delay(1000);
+    delay(MEDIUM_DELAY);
     send_text("ok\n");
-    delay(1000); // if not here it goes into the okay box. CDK lag 
+    delay(MEDIUM_DELAY); // if not here it goes into the okay box. CDK lag 
 }
 
 /* instead of having to do send_key(HID_KEY_*) a million times you can do send_text("cmp \n.\ntcm\n") and it converts */
