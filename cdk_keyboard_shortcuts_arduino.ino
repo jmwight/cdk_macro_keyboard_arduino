@@ -22,7 +22,7 @@
 #define PIN_NEOPIXEL 19
 #define SCREEN_TIMEOUT  14000
 #define SHORT_DELAY 500
-#define MEDIUM_DELAY  1000
+#define MEDIUM_DELAY  1200
 #define LONG_DELAY  1500
 
 void read_line(int lines);
@@ -303,12 +303,6 @@ void read_another_line()
   }
 }
 
-Wight, John
-  
-9:41 AM (11 hours ago)
-  
-  
-to me
 /* print an RO that is something else */
 void pp(int print_num)
 {
@@ -317,7 +311,7 @@ void pp(int print_num)
   {
     ++press_num;
     send_text("fc\ny\n\n");
-    delay(LONG_DELAY);
+    delay(MEDIUM_DELAY);
     send_text(".\n");
     write_to_screen("pp:\nChange method of payment if needed. When done press button again");
   }
@@ -331,37 +325,7 @@ void pp(int print_num)
   {
     press_num = 0;
     send_text("\n\ny\n");
-    if(print_num == 1)
-      send_text("1");
-    else
-      send_text("2");
-    send_text("\n");
-    write_to_screen("Print");
-  }
-}
-
-/* print an RO that is something else */
-void pp(int print_num)
-{
-  static uint8_t press_num = 0;
-  if(press_num == 0)
-  {
-    ++press_num;
-    send_text("fc\ny\n\n");
     delay(LONG_DELAY);
-    send_text(".\n");
-    write_to_screen("pp:\nChange method of payment if needed. When done press button again");
-  }
-  else if(press_num == 1)
-  {
-    ++press_num;
-    send_text("pp\n");
-    write_to_screen("pp:\nEnter out mileage if not already correct. When done press button again");
-  }
-  else
-  {
-    press_num = 0;
-    send_text("\n\ny\n");
     if(print_num == 1)
       send_text("1");
     else
@@ -379,7 +343,7 @@ void pp_tcm(int print_num)
   {
     ++press_num;
     send_text("fc\ny\n\n");
-    delay(LONG_DELAY);
+    delay(MEDIUM_DELAY);
  
     send_text(".\ncmp\ntcm\n\npp\n");
     write_to_screen("pp_tcm:\n Please enter out mileage if not already correct then hit key again");
@@ -388,11 +352,11 @@ void pp_tcm(int print_num)
   {
     press_num = 0;
     send_text("\n\ny\n");
+    delay(LONG_DELAY);
     if(print_num == 1)
       send_text("1");
     else
       send_text("2");
-    delay(MEDIUM_DELAY);
     send_text("\n");
     write_to_screen("Print TCM");
   }
@@ -440,7 +404,9 @@ void fc()
   else if(press_num == 2)
   {
     press_num = 0;
-    send_text("\n\ny\n20\n");
+    send_text("\n\ny\n");
+    delay(LONG_DELAY);
+    send_text("20\n");
     write_to_screen("Final Close");
   }
 }
