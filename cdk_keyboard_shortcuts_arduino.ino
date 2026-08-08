@@ -325,7 +325,9 @@ void pp(int print_num)
   else
   {
     press_num = 0;
-    send_text("\n\ny\n");
+    send_text("\n\n");
+    delay(MEDIUM_DELAY);
+    send_text("y\n");
     delay(SUPER_DELAY);
     if(print_num == 1)
       send_text("1");
@@ -352,7 +354,9 @@ void pp_tcm(int print_num)
   else
   {
     press_num = 0;
-    send_text("\n\ny\n");
+    send_text("\n\n");
+    delay(MEDIUM_DELAY);
+    send_text("y\n");
     delay(SUPER_DELAY);
     if(print_num == 1)
       send_text("1");
@@ -405,7 +409,9 @@ void fc()
   else if(press_num == 2)
   {
     press_num = 0;
-    send_text("\n\ny\n");
+    send_text("\n\n");
+    delay(MEDIUM_DELAY);
+    send_text("y\n");
     delay(LONG_DELAY);
     send_text("20\n");
     write_to_screen("Final Close");
