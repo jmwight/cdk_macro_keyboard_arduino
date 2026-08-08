@@ -1,4 +1,4 @@
-#include <Arduino.h>
+ #include <Arduino.h>
 #include "Adafruit_TinyUSB.h"
 #include <SPI.h>
 #include <Adafruit_GFX.h>
@@ -24,6 +24,7 @@
 #define SHORT_DELAY 500
 #define MEDIUM_DELAY  1200
 #define LONG_DELAY  1500
+#define SUPER_DELAY 3000
 
 void read_line(int lines);
 void read_ro();
@@ -56,16 +57,16 @@ Adafruit_SH1106G display = Adafruit_SH1106G(128, 64, &SPI1, OLED_DC, OLED_RST, O
 Adafruit_NeoPixel pixels(NUM_PIXELS, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
 
 // the setup function runs once when you press reset or power the board
-void setup() 
+void setup()
 {
   /* Display setup */
   // Start the screen hardware (true overrides the default I2C reset)
-  display.begin(0, true); 
-  
+  display.begin(0, true);
+ 
   // Clear the buffer
   display.clearDisplay();
   display.display();
-  
+ 
   // Configure text properties
   display.setTextSize(1);               // Text size (1 is tiny, 2 is medium)
   display.setTextColor(SH110X_WHITE);   // Use SH110X_WHITE or SH110X_BLACK
@@ -74,7 +75,7 @@ void setup()
   /* key light setup */
   pixels.begin();
   pixels.setBrightness(20); // 0 to 255
-  
+ 
   /* USB communication setup */
   // Manual begin() is required on core without built-in support e.g. mbed rp2040
   if (!TinyUSBDevice.isInitialized()) {
@@ -117,10 +118,10 @@ void light_on_one_second(void)
   digitalWrite(13, LOW);
 }
 
-void process_hid() 
+void process_hid()
 {
   uint16_t keys_pressed = 0; // bitfield for keys pressed
-  
+ 
   for(int i = 1; i < 13; ++i) {
     keys_pressed |= (!digitalRead(i)) << i-1;
   }
@@ -137,8 +138,8 @@ void process_hid()
   {
     // use to send key release report
     static bool has_key = false;
-    
-    // multiple keys pressed at the same time 
+   
+    // multiple keys pressed at the same time
     if ((keys_pressed & (keys_pressed - 1)))
       return;
 
@@ -198,7 +199,7 @@ void process_hid()
   }
 }
 
-void loop() 
+void loop()
 {
   #ifdef TINYUSB_NEED_POLLING_TASK
   // Manual call tud_task since it isn't called by Core's background
@@ -274,7 +275,7 @@ void write_to_screen(char *s)
   display.display();
   display.setContrast(80);
   // Set the coordinate cursor (X, Y) where text starts
-  display.setCursor(0, 10);             
+  display.setCursor(0, 10);            
   display.print(s);
 
   // Push the text from the microchip memory to the physical glass
@@ -294,7 +295,7 @@ void read_line()
 
 void read_another_line()
 {
-  
+ 
   write_to_screen("Read Additional Line");
   char i;
   for(i = 0; i < 6; ++i)
@@ -325,7 +326,7 @@ void pp(int print_num)
   {
     press_num = 0;
     send_text("\n\ny\n");
-    delay(LONG_DELAY);
+    delay(SUPER_DELAY);
     if(print_num == 1)
       send_text("1");
     else
@@ -352,7 +353,7 @@ void pp_tcm(int print_num)
   {
     press_num = 0;
     send_text("\n\ny\n");
-    delay(LONG_DELAY);
+    delay(SUPER_DELAY);
     if(print_num == 1)
       send_text("1");
     else
@@ -383,7 +384,7 @@ void fnl()
 void fc()
 {
   static uint8_t press_num = 0;
-  // first key press 
+  // first key press
   if(press_num == 0)
   {
     ++press_num;
@@ -446,7 +447,7 @@ void open_preinvoiced_ro()
     send_text("\n");
     delay(MEDIUM_DELAY);
     send_text("ok\n");
-    delay(MEDIUM_DELAY); // if not here it goes into the okay box. CDK lag 
+    delay(MEDIUM_DELAY); // if not here it goes into the okay box. CDK lag
 }
 
 /* instead of having to do send_key(HID_KEY_*) a million times you can do send_text("cmp \n.\ntcm\n") and it converts */
