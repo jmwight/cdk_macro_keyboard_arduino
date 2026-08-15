@@ -15,8 +15,10 @@
 > When RO is already printed. You just need to close at end of day. Starting at PFC screen inside RO. First press starts final close and brings you into cmp. If needed change it. Once that is done hit key 6 again. This will bring you to mileage out. Change it if you need to. Then hit key 6 a third time and it will close the RO and not print it.
 - Key 7: Change to Tyler
 > If you have an RO where it is at a loss (for instance a free oil change with nothing else profitable on the RO to offset this) you don't want to report in your name. This changes the service advisor to Tyler Cotter so you don't lose money off your gross. Start in PFC screen and type in RO number. It assumes it has already been preinvoiced. It opens then closes it. Then switches to SWR. It will ask you to type in the RO number again. Hit the same key after, it will change to Tyler then switch back the screen to PFC.
-- Key 8-12: Not Programmed
+- Key 8-11: Not Programmed
 > Key 8 through 12 are not programmed at this time. 
+- Key 12: Reset State of Last Button Press
+> For keys that have multiple presses this resets the last used button to the first press. 
 
 ## Keyboard Numbering Sequence
 Note: Keys are numbered 1-12 not 0-11 as in standard programming convention to line up with standard convention most people use for numbering. 
