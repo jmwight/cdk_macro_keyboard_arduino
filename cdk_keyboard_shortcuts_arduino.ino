@@ -23,7 +23,7 @@
 #define SCREEN_TIMEOUT  14000
 #define SHORT_DELAY 500
 #define MEDIUM_DELAY  1200
-#define LONG_DELAY  1500
+#define LONG_DELAY  1800
 #define SUPER_DELAY 3000
 
 void read_line(int lines);
@@ -326,7 +326,7 @@ void pp(int print_num)
   {
     press_num = 0;
     send_text("\n\n");
-    delay(MEDIUM_DELAY);
+    delay(LONG_DELAY);
     send_text("y\n");
     delay(SUPER_DELAY);
     if(print_num == 1)
@@ -355,7 +355,7 @@ void pp_tcm(int print_num)
   {
     press_num = 0;
     send_text("\n\n");
-    delay(MEDIUM_DELAY);
+    delay(LONG_DELAY);
     send_text("y\n");
     delay(SUPER_DELAY);
     if(print_num == 1)
@@ -410,7 +410,7 @@ void fc()
   {
     press_num = 0;
     send_text("\n\n");
-    delay(MEDIUM_DELAY);
+    delay(SUPER_DELAY);
     send_text("y\n");
     delay(LONG_DELAY);
     send_text("20\n");
