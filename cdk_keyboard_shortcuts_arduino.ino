@@ -4,7 +4,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
 #include <Adafruit_NeoPixel.h>
-#include <stdarg.h> // to take variable arguments 
+#include <stdlib.h> // NULL memory address definition 
 
 #define KEY_1_PRESSED(x) 1 & x
 #define KEY_2_PRESSED(x) 1 << 1 & x
@@ -29,11 +29,12 @@
 
 void read_line(int lines);
 void read_ro();
-void fnl();
-void pp(int print_num);
-void pp_tcm(int print_num);
-void fc();
-void change_to_tyler();
+uint8_t *fnl();
+uint8_t *pp(int print_num);
+uint8_t *pp_tcm(int print_num);
+uint8_t *fc();
+uint8_t *fchange_to_tyler();
+void reset_last_key_press_state();
 void open_ro();
 void send_key(uint8_t k);
 void send_key_with_modifier(uint8_t k, uint8_t modifier);
@@ -42,6 +43,7 @@ void write_to_screen(char *s);
 
 const int pin = D0;
 bool activeState = false;
+uint8_t *last_func_key_press_state = NULL;
 
 static uint8_t  wait = 0; // wait already written to screen
 
@@ -161,27 +163,32 @@ void process_hid()
       else if(KEY_3_PRESSED(keys_pressed))
       {
         key_light(2, true);
-        fnl();
+        last_func_key_press_state = fnl();
       }
       else if(KEY_4_PRESSED(keys_pressed))
       {
         key_light(3, true);
-        pp_tcm(2);
+        last_func_key_press_state = pp_tcm(2);
       }
       else if(KEY_5_PRESSED(keys_pressed))
       {
         key_light(4, true);
-        pp(2);
+        last_func_key_press_state = pp(2);
       }
       else if(KEY_6_PRESSED(keys_pressed))
       {
         key_light(5, true);
-        fc();
+        last_func_key_press_state = fc();
       }
       else if(KEY_7_PRESSED(keys_pressed))
       {
         key_light(6, true);
-        change_to_tyler();
+        last_func_key_press_state = change_to_tyler();
+      }
+      else if(KEY_9_PRESSED(keys_pressed))
+      {
+        key_light(8, true);
+        reset_last_key_press_state();
       }
       else
       {
@@ -317,7 +324,7 @@ void read_another_line()
 }
 
 /* print an RO that is something else */
-void pp(int print_num)
+uint8_t *pp(int print_num)
 {
   static uint8_t press_num = 0;
   if(press_num == 0)
@@ -348,10 +355,12 @@ void pp(int print_num)
     send_text("\n");
     write_to_screen("Print");
   }
+
+  return &press_num;
 }
 
 /* print an RO that is just TCM */
-void pp_tcm(int print_num)
+uint8_t *pp_tcm(int print_num)
 {
   static uint8_t press_num = 0;
   if(press_num == 0)
@@ -377,9 +386,11 @@ void pp_tcm(int print_num)
     send_text("\n");
     write_to_screen("Print TCM");
   }
+
+  return &press_num;
 }
 
-void fnl()
+uint8_t *fnl()
 {
   static uint8_t press_num = 0;
   if(press_num == 0)
@@ -394,10 +405,12 @@ void fnl()
     send_text("\n999\n");
     write_to_screen("Finish a Line");
   }
+
+  return &press_num;
 }
 
 /* final close an RO */
-void fc()
+uint8_t *fc()
 {
   static uint8_t press_num = 0;
   // first key press
@@ -428,10 +441,12 @@ void fc()
     send_text("20\n");
     write_to_screen("Final Close");
   }
+
+  return &press_num;
 }
 
  /* gets out goes to swr, then enter RO number, hit button again it changes to tyler then brings you back to pfc */
-void change_to_tyler()
+uint8_t *change_to_tyler()
 {
   static uint8_t press_num = 0;
   if(press_num == 0)
@@ -459,6 +474,17 @@ void change_to_tyler()
     delay(SHORT_DELAY);
     send_text("1553087\n\n\n");
     write_to_screen("Change to Tyler");
+  }
+
+  return &press_num;
+}
+
+/* resets the key press state of the last used function key to 0 */
+void reset_last_key_press_state()
+{
+  if(last_func_key_press_state != NULL)
+  {
+    *last_func_key_press_state = 0;
   }
 }
 
