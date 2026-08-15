@@ -4,6 +4,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
 #include <Adafruit_NeoPixel.h>
+#include <stdarg.h> // to take variable arguments 
 
 #define KEY_1_PRESSED(x) 1 & x
 #define KEY_2_PRESSED(x) 1 << 1 & x
@@ -34,6 +35,8 @@ void pp_tcm(int print_num);
 void fc();
 void change_to_tyler();
 void open_ro();
+void send_key(uint8_t k);
+void send_key_with_modifier(uint8_t k, uint8_t modifier);
 uint8_t send_text(char *s);
 void write_to_screen(char *s);
 
@@ -256,17 +259,26 @@ void key_lights_off()
   pixels.show();
 }
 
-void send_key(uint8_t k)
+/* sends an individual key with a modifier. Example SHIFT+key or CTRL+ALT+key. Modifier is OR bitmask of CTRL & ALT or whatever combo
+   yout want */
+void send_key_with_modifier(uint8_t k, uint8_t modifier)
 {
   uint8_t keycode[6] = {0};
   keycode[0] = k;
-  usb_keyboard.keyboardReport(0, 0, keycode);
+  usb_keyboard.keyboardReport(0, modifier, keycode);
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
   delay(10);
   usb_keyboard.keyboardRelease(0);
   delay(10);
   digitalWrite(13, LOW);
+}
+
+
+/* sends an individual key */
+void send_key(uint8_t k)
+{
+  send_key_with_modifier(k, 0); // just use send_key_with_modifier with no modifier 
 }
 
 void write_to_screen(char *s)
@@ -439,12 +451,15 @@ void change_to_tyler()
     send_text("\n");
     delay(MEDIUM_DELAY);
     send_text("\n11725\n");
+    send_key_with_modifier(HID_KEY_F11, KEYBOARD_MODIFIER_RIGHTSHIFT);
+    delay(SHORT_DELAY);
     send_key(HID_KEY_F3);
     delay(SHORT_DELAY);
-    send_text("pfc\n1553087\n\n");
+    send_text("pfc\n");
+    delay(SHORT_DELAY);
+    send_text("1553087\n\n\n");
     write_to_screen("Change to Tyler");
   }
- 
 }
 
 /* open RO */
