@@ -185,9 +185,9 @@ void process_hid()
         key_light(6, true);
         last_func_key_press_state = change_to_tyler();
       }
-      else if(KEY_9_PRESSED(keys_pressed))
+      else if(KEY_12_PRESSED(keys_pressed))
       {
-        key_light(8, true);
+        key_light(11, true);
         reset_last_key_press_state();
       }
       else
@@ -486,6 +486,7 @@ void reset_last_key_press_state()
   {
     *last_func_key_press_state = 0;
   }
+  write_to_screen("Reset key state last key");
 }
 
 /* open RO */
