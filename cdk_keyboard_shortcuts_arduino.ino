@@ -23,7 +23,7 @@
 #define PIN_NEOPIXEL 19
 #define SCREEN_TIMEOUT  14000
 #define SHORT_DELAY 500
-#define MEDIUM_DELAY  1200
+#define MEDIUM_DELAY  1000
 #define LONG_DELAY  1800
 #define SUPER_DELAY 3000
 
@@ -445,8 +445,8 @@ uint8_t *fc()
   return &press_num;
 }
 
- /* gets out goes to swr, then enter RO number, hit button again it changes to tyler then brings you back to pfc */
-uint8_t *change_to_tyler()
+/* gets out goes to swr, then enter RO number, hit button again it changes to tyler then brings you back to pfc */
+void change_to_tyler()
 {
   static uint8_t press_num = 0;
   if(press_num == 0)
@@ -455,6 +455,8 @@ uint8_t *change_to_tyler()
     open_preinvoiced_ro();
     send_key(HID_KEY_F3);
     delay(SHORT_DELAY); // not sure if delay(500) needed just there for precaution.
+    send_key(HID_KEY_F3);
+    delay(SHORT_DELAY);
     send_key(HID_KEY_F3);
     delay(SHORT_DELAY);
     send_text("swr\n");
@@ -466,17 +468,12 @@ uint8_t *change_to_tyler()
     send_text("\n");
     delay(MEDIUM_DELAY);
     send_text("\n11725\n");
-    send_key_with_modifier(HID_KEY_F11, KEYBOARD_MODIFIER_RIGHTSHIFT);
-    delay(SHORT_DELAY);
     send_key(HID_KEY_F3);
     delay(SHORT_DELAY);
-    send_text("pfc\n");
-    delay(SHORT_DELAY);
-    send_text("1553087\n\n\n");
+    send_text("pfc\n1553087\n\n");
     write_to_screen("Change to Tyler");
   }
-
-  return &press_num;
+ 
 }
 
 /* resets the key press state of the last used function key to 0 */
