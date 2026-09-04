@@ -24,7 +24,7 @@
 #define SCREEN_TIMEOUT  14000
 #define SHORT_DELAY 500
 #define MEDIUM_DELAY  1000
-#define LONG_DELAY  1800
+#define LONG_DELAY  2000
 #define SUPER_DELAY 3000
 
 void read_line(int lines);
@@ -446,7 +446,7 @@ uint8_t *fc()
 }
 
 /* gets out goes to swr, then enter RO number, hit button again it changes to tyler then brings you back to pfc */
-void change_to_tyler()
+uint8_t *change_to_tyler()
 {
   static uint8_t press_num = 0;
   if(press_num == 0)
@@ -473,7 +473,7 @@ void change_to_tyler()
     send_text("pfc\n1553087\n\n");
     write_to_screen("Change to Tyler");
   }
- 
+  return &press_num;
 }
 
 /* resets the key press state of the last used function key to 0 */
