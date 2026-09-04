@@ -398,12 +398,14 @@ uint8_t *fnl()
     ++press_num;
     write_to_screen("fnl: \nPlease Enter line on terminal then hit this key again.");
     send_text("fnl ");
+    delay(SHORT_DELAY);
   }
   else
   {
     press_num = 0;
     send_text("\n999\n");
     write_to_screen("Finish a Line");
+    delay(SHORT_DELAY);
   }
 
   return &press_num;
