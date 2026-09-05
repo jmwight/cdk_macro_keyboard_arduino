@@ -470,7 +470,10 @@ uint8_t *change_to_tyler()
     send_text("\n");
     delay(MEDIUM_DELAY);
     send_text("\n11725\n");
-    send_key_with_modifier(HID_KEY_F11, HID_KEY_SHIFT_RIGHT);
+    uint8_t SHIFT_ONLY = HID_KEY_SHIFT_RIGHT & (~KEYBOARD_MODIFIER_LEFTCTRL) & (~KEYBOARD_MODIFIER_RIGHTALT) 
+      & (~KEYBOARD_MODIFIER_LEFTALT) & (~KEYBOARD_MODIFIER_RIGHTGUI);
+    //send_key_with_modifier(HID_KEY_F11, HID_KEY_SHIFT_RIGHT); WRONG. TODO: REMOVE
+    send_key_with_modifier(HID_KEY_F11, SHIFT_ONLY);
     send_text("\n");
     delay(SHORT_DELAY);
     send_text("pfc\n1553087\n\n");
