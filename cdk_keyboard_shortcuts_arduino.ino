@@ -470,7 +470,8 @@ uint8_t *change_to_tyler()
     send_text("\n");
     delay(MEDIUM_DELAY);
     send_text("\n11725\n");
-    send_key(HID_KEY_F3);
+    send_key_with_modifier(HID_KEY_F11, HID_KEY_SHIFT_RIGHT);
+    send_text("\n");
     delay(SHORT_DELAY);
     send_text("pfc\n1553087\n\n");
     write_to_screen("Change to Tyler");
