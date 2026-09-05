@@ -33,7 +33,7 @@ uint8_t *fnl();
 uint8_t *pp(int print_num);
 uint8_t *pp_tcm(int print_num);
 uint8_t *fc();
-uint8_t *fchange_to_tyler();
+uint8_t *change_to_tyler();
 void reset_last_key_press_state();
 void open_ro();
 void send_key(uint8_t k);
