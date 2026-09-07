@@ -469,14 +469,15 @@ uint8_t *change_to_tyler()
     press_num = 0;
     send_text("\n");
     delay(MEDIUM_DELAY);
-    send_text("\n11725\n");
+    send_text("\n11725\n\n");
     uint8_t SHIFT_ONLY = HID_KEY_SHIFT_RIGHT & (~KEYBOARD_MODIFIER_LEFTCTRL) & (~KEYBOARD_MODIFIER_RIGHTALT) 
       & (~KEYBOARD_MODIFIER_LEFTALT) & (~KEYBOARD_MODIFIER_RIGHTGUI);
     //send_key_with_modifier(HID_KEY_F11, HID_KEY_SHIFT_RIGHT); WRONG. TODO: REMOVE
     send_key_with_modifier(HID_KEY_F11, SHIFT_ONLY);
-    send_text("\n");
-    delay(SHORT_DELAY);
-    send_text("pfc\n1553087\n\n");
+    send_key(HID_KEY_F3);
+    send_key(HID_KEY_F3);
+    delay(100); // NOTE: can we take this out? Is it even needed?
+    send_text("pfc\n1553087\n\n\n");
     write_to_screen("Change to Tyler");
   }
   return &press_num;
